@@ -18,6 +18,8 @@ ADudeWalksCharacter::ADudeWalksCharacter()
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
     GetCharacterMovement()->GroundFriction = 8.f;
     GetCharacterMovement()->bOrientRotationToMovement = true;
+    GetCharacterMovement()->NavAgentProps.bCanSwim = true;
+    GetCharacterMovement()->MaxSwimSpeed = 200.f;
 
     bUseControllerRotationYaw = false;
 

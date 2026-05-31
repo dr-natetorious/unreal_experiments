@@ -21,4 +21,7 @@ void UDudeWalksAnimInstance::NativeUpdateAnimation(float /*DeltaSeconds*/)
     SprintAlpha = bIsSprinting ? 1.f : 0.f;
     bIsInAir = Owner->GetCharacterMovement()->IsFalling();
     JumpAlpha = bIsInAir ? 1.f : 0.f;
+    bIsSwimming = Owner->GetCharacterMovement()->IsSwimming();
+    SwimAlpha = bIsSwimming ? 1.f : 0.f;
+    SwimMoveAlpha = (bIsSwimming && RawSpeed > 10.f) ? 1.f : 0.f;
 }

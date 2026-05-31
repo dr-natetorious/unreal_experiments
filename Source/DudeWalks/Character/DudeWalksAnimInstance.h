@@ -41,6 +41,17 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
     float JumpAlpha = 0.f;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    bool bIsSwimming = false;
+
+    // 0.0=land locomotion, 1.0=swimming. Outer swim blend.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    float SwimAlpha = 0.f;
+
+    // 0.0=treading water, 1.0=swimming forward. Inner swim blend.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    float SwimMoveAlpha = 0.f;
+
 protected:
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 };
