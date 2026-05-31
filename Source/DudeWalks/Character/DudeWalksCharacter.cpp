@@ -54,6 +54,8 @@ void ADudeWalksCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     EIC->BindAction(LookAction,   ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnLook);
     EIC->BindAction(SprintAction, ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnSprintStart);
     EIC->BindAction(SprintAction, ETriggerEvent::Completed,  this, &ADudeWalksCharacter::OnSprintEnd);
+    EIC->BindAction(JumpAction,   ETriggerEvent::Started,    this, &ACharacter::Jump);
+    EIC->BindAction(JumpAction,   ETriggerEvent::Completed,  this, &ACharacter::StopJumping);
 }
 
 void ADudeWalksCharacter::OnMove(const FInputActionValue& Value)

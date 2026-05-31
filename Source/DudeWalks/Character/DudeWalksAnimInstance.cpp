@@ -19,4 +19,6 @@ void UDudeWalksAnimInstance::NativeUpdateAnimation(float /*DeltaSeconds*/)
     MoveAlpha = bIsMoving ? 1.f : 0.f;
     bIsSprinting = Owner->GetCharacterMovement()->MaxWalkSpeed >= Owner->RunSpeed;
     SprintAlpha = bIsSprinting ? 1.f : 0.f;
+    bIsInAir = Owner->GetCharacterMovement()->IsFalling();
+    JumpAlpha = bIsInAir ? 1.f : 0.f;
 }

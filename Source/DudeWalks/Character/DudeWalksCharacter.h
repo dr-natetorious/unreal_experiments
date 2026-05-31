@@ -33,6 +33,9 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     TObjectPtr<UInputAction> SprintAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> JumpAction;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
     float WalkSpeed = 200.f;
 

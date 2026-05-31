@@ -34,6 +34,13 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
     float SprintAlpha = 0.f;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    bool bIsInAir = false;
+
+    // 0.0=grounded, 1.0=in air. Drives jump TwoWayBlend Alpha.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    float JumpAlpha = 0.f;
+
 protected:
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 };
