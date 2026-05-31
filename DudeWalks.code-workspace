@@ -1,0 +1,879 @@
+{
+	"folders": [
+		{
+			"name": "DudeWalks",
+			"path": "."
+		},
+		{
+			"name": "UE5",
+			"path": "/apps/git/UnrealEngine"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off",
+		"npm.autoDetect": "off",
+		"terminal.integrated.env.linux": {
+			"PATH": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64:${env:PATH}",
+			"DOTNET_ROOT": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64",
+			"DOTNET_HOST_PATH": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64/dotnet",
+			"DOTNET_MULTILEVEL_LOOKUP": "0",
+			"DOTNET_ROLL_FORWARD": "LatestMajor"
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-dotnettools.csharp"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "DudeWalks Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks Linux Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks Linux Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks Linux Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"Linux",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks LinuxArm64 Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks LinuxArm64 DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks LinuxArm64 Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Test Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Test Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks LinuxArm64 Test Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Test Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Test",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Shipping Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Shipping Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalks LinuxArm64 Shipping Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalks LinuxArm64 Shipping Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalks",
+					"LinuxArm64",
+					"Shipping",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Debug Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Debug Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalksEditor Linux Debug Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Debug Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Debug",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux DebugGame Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux DebugGame Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalksEditor Linux DebugGame Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux DebugGame Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"DebugGame",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Development Build",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Development Rebuild",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex"
+				],
+				"problemMatcher": "$msCompile",
+				"dependsOn": [
+					"DudeWalksEditor Linux Development Clean"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			},
+			{
+				"label": "DudeWalksEditor Linux Development Clean",
+				"group": "build",
+				"command": "Engine/Build/BatchFiles/Linux/Build.sh",
+				"args": [
+					"DudeWalksEditor",
+					"Linux",
+					"Development",
+					"/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-waitmutex",
+					"-clean"
+				],
+				"problemMatcher": "$msCompile",
+				"type": "shell",
+				"options": {
+					"cwd": "/apps/git/UnrealEngine"
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch DudeWalks (Debug)",
+				"request": "launch",
+				"program": "/apps/git/unreal_experiments/Binaries/Linux/DudeWalks-Linux-Debug",
+				"preLaunchTask": "DudeWalks Linux Debug Build",
+				"args": [
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalks (DebugGame)",
+				"request": "launch",
+				"program": "/apps/git/unreal_experiments/Binaries/Linux/DudeWalks-Linux-DebugGame",
+				"preLaunchTask": "DudeWalks Linux DebugGame Build",
+				"args": [
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalks (Development)",
+				"request": "launch",
+				"program": "/apps/git/unreal_experiments/Binaries/Linux/DudeWalks",
+				"preLaunchTask": "DudeWalks Linux Development Build",
+				"args": [
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalks (Test)",
+				"request": "launch",
+				"program": "/apps/git/unreal_experiments/Binaries/Linux/DudeWalks-Linux-Test",
+				"preLaunchTask": "DudeWalks Linux Test Build",
+				"args": [
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalks (Shipping)",
+				"request": "launch",
+				"program": "/apps/git/unreal_experiments/Binaries/Linux/DudeWalks-Linux-Shipping",
+				"preLaunchTask": "DudeWalks Linux Shipping Build",
+				"args": [
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalksEditor (Debug)",
+				"request": "launch",
+				"program": "/apps/git/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Linux-Debug",
+				"preLaunchTask": "DudeWalksEditor Linux Debug Build",
+				"args": [
+					"/apps/git/unreal_experiments/DudeWalks.uproject"
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalksEditor (DebugGame)",
+				"request": "launch",
+				"program": "/apps/git/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Linux-DebugGame",
+				"preLaunchTask": "DudeWalksEditor Linux DebugGame Build",
+				"args": [
+					"/apps/git/unreal_experiments/DudeWalks.uproject"
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Launch DudeWalksEditor (Development)",
+				"request": "launch",
+				"program": "/apps/git/UnrealEngine/Engine/Binaries/Linux/UnrealEditor",
+				"preLaunchTask": "DudeWalksEditor Linux Development Build",
+				"args": [
+					"/apps/git/unreal_experiments/DudeWalks.uproject"
+				],
+				"cwd": "/apps/git/UnrealEngine",
+				"type": "cppdbg",
+				"visualizerFile": "/apps/git/UnrealEngine/Engine/Extras/VisualStudioDebugging/Unreal.natvis",
+				"showDisplayString": true
+			},
+			{
+				"name": "Generate Project Files",
+				"type": "coreclr",
+				"request": "launch",
+				"preLaunchTask": "UnrealBuildTool Linux Development Build",
+				"program": "/apps/git/UnrealEngine/Engine/Build/BatchFiles/RunUBT.bat",
+				"args": [
+					"-projectfiles",
+					"-vscode",
+					"-project=/apps/git/unreal_experiments/DudeWalks.uproject",
+					"-game",
+					"-engine",
+					"-dotnet"
+				],
+				"env": {
+					"PATH": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64:${env:PATH}",
+					"DOTNET_ROOT": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64",
+					"DOTNET_HOST_PATH": "/apps/git/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64/dotnet",
+					"DOTNET_MULTILEVEL_LOOKUP": "0",
+					"DOTNET_ROLL_FORWARD": "LatestMajor"
+				},
+				"console": "internalConsole",
+				"internalConsoleOptions": "openOnSessionStart",
+				"stopAtEntry": false,
+				"cwd": "/apps/git/UnrealEngine"
+			}
+		]
+	}
+}

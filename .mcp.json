@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "unreal-mcp": {
+      "command": "/home/nateb/.nvm/versions/node/v24.15.0/bin/node",
+      "args": ["/apps/git/Unreal_mcp/dist/cli.js"],
+      "env": {
+        "UE_PROJECT_PATH": "/apps/git/unreal_experiments/DudeWalks.uproject",
+        "MCP_ADDITIONAL_PATH_PREFIXES": "/apps/git/unreal_experiments",
+        "UE_EDITOR_EXE": "/apps/git/UnrealEngine/Engine/Binaries/Linux/UnrealEditor",
+        "MCP_AUTOMATION_HOST": "127.0.0.1",
+        "MCP_AUTOMATION_PORT": "8091",
+        "MCP_AUTOMATION_CLIENT_MODE": "true",
+        "MCP_CONNECTION_TIMEOUT_MS": "5000",
+        "MCP_REQUEST_TIMEOUT_MS": "30000",
+        "MCP_ROUTE_STDOUT_LOGS": "true",
+        "LOG_LEVEL": "info",
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}

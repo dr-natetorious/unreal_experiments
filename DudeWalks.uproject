@@ -1,0 +1,23 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.5",
+	"Category": "",
+	"Description": "Isolated experiment: WASD walk, shift run, idle.",
+	"Modules": [
+		{
+			"Name": "DudeWalks",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "McpAutomationBridge",
+			"Enabled": true
+		}
+	]
+}

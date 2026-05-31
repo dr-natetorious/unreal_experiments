@@ -1,69 +1,23 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Build directories
-build/
+# UE5 generated — never commit
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
 Build/
-build-*/
 
-# CMake generated files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
+# Plugin generated — source is committed, binaries are not
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
 
-# Temporary files
-*.tmp
-*.log
-*.bak
-*.swp
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
 
-# vcpkg
-vcpkg_installed/
+# OS
+.DS_Store
+Thumbs.db
 
-# debug information files
-*.dwo
-
-# test output & cache
-Testing/
-.cache/
+# Local tool config (MCP path allowlist)
+.ignore
