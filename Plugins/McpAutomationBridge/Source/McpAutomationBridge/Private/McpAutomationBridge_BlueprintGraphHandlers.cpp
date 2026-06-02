@@ -69,6 +69,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+// AnimGraph Node Types (for cache pose property setters)
+#include "AnimGraphNode_SaveCachedPose.h"
+#include "AnimGraphNode_UseCachedPose.h"
+
 // K2Node Types
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
@@ -1115,10 +1119,15 @@ bool UMcpAutomationBridgeSubsystem::HandleBlueprintGraphAction(
     TargetGraph->Modify();
 
     FString FromNodeId, FromPinName, ToNodeId, ToPinName;
+    FString FromPinAlias, ToPinAlias;
     Payload->TryGetStringField(TEXT("fromNodeId"), FromNodeId);
     Payload->TryGetStringField(TEXT("fromPinName"), FromPinName);
+    Payload->TryGetStringField(TEXT("fromPin"), FromPinAlias);
     Payload->TryGetStringField(TEXT("toNodeId"), ToNodeId);
     Payload->TryGetStringField(TEXT("toPinName"), ToPinName);
+    Payload->TryGetStringField(TEXT("toPin"), ToPinAlias);
+    if (FromPinName.IsEmpty()) FromPinName = FromPinAlias;
+    if (ToPinName.IsEmpty()) ToPinName = ToPinAlias;
 
     UEdGraphNode *FromNode = FindNodeByIdOrName(FromNodeId);
     UEdGraphNode *ToNode = FindNodeByIdOrName(ToNodeId);
@@ -1421,6 +1430,20 @@ bool UMcpAutomationBridgeSubsystem::HandleBlueprintGraphAction(
                                      ESearchCase::IgnoreCase)) {
         TargetNode->bCommentBubblePinned = Value.ToBool();
         bHandled = true;
+      } else if (PropertyName.Equals(TEXT("CacheName"), ESearchCase::IgnoreCase)) {
+        if (UAnimGraphNode_SaveCachedPose* SaveNode = Cast<UAnimGraphNode_SaveCachedPose>(TargetNode)) {
+          SaveNode->CacheName = Value;
+          bHandled = true;
+        }
+      } else if (PropertyName.Equals(TEXT("NameOfCache"), ESearchCase::IgnoreCase)) {
+        if (UAnimGraphNode_UseCachedPose* UseNode = Cast<UAnimGraphNode_UseCachedPose>(TargetNode)) {
+          // NameOfCache is private — use reflection to set it, bypassing C++ access.
+          FProperty* Prop = UseNode->GetClass()->FindPropertyByName(FName(TEXT("NameOfCache")));
+          if (FStrProperty* StrProp = CastField<FStrProperty>(Prop)) {
+            StrProp->SetPropertyValue_InContainer(UseNode, Value);
+            bHandled = true;
+          }
+        }
       }
 
       if (bHandled) {

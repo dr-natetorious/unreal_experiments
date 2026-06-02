@@ -1,15 +1,14 @@
 #include "Character/DudeWalksCharacter.h"
+#include "Vehicle/VehicleBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EngineUtils.h"
 
 ADudeWalksCharacter::ADudeWalksCharacter()
 {
-    // Use ACharacter::GetMesh() — never a separate component.
-    // TryGetPawnOwner() in the ABP only resolves when the mesh IS the character's
-    // inherited mesh slot. A custom USkeletalMeshComponent breaks that link.
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
     GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -52,16 +51,24 @@ void ADudeWalksCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     UEnhancedInputComponent* EIC = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-    EIC->BindAction(MoveAction,   ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnMove);
-    EIC->BindAction(LookAction,   ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnLook);
-    EIC->BindAction(SprintAction, ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnSprintStart);
-    EIC->BindAction(SprintAction, ETriggerEvent::Completed,  this, &ADudeWalksCharacter::OnSprintEnd);
-    EIC->BindAction(JumpAction,   ETriggerEvent::Started,    this, &ACharacter::Jump);
-    EIC->BindAction(JumpAction,   ETriggerEvent::Completed,  this, &ACharacter::StopJumping);
+    EIC->BindAction(MoveAction,         ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnMove);
+    EIC->BindAction(LookAction,         ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnLook);
+    EIC->BindAction(SprintAction,       ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnSprintStart);
+    EIC->BindAction(SprintAction,       ETriggerEvent::Completed,  this, &ADudeWalksCharacter::OnSprintEnd);
+    EIC->BindAction(JumpAction,         ETriggerEvent::Started,    this, &ACharacter::Jump);
+    EIC->BindAction(JumpAction,         ETriggerEvent::Completed,  this, &ACharacter::StopJumping);
+    EIC->BindAction(EnterVehicleAction, ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnEnterVehicle);
+    EIC->BindAction(HonkAction,         ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnHonk);
+    EIC->BindAction(ExitVehicleAction,  ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnExitVehicle);
 }
+
+// ---------------------------------------------------------------------------
+// On-foot movement
+// ---------------------------------------------------------------------------
 
 void ADudeWalksCharacter::OnMove(const FInputActionValue& Value)
 {
+    if (CharacterState != ECharacterState::OnFoot) return;
     const FVector2D Axis = Value.Get<FVector2D>();
     if (!Controller || Axis.IsZero()) return;
 
@@ -79,10 +86,138 @@ void ADudeWalksCharacter::OnLook(const FInputActionValue& Value)
 
 void ADudeWalksCharacter::OnSprintStart()
 {
-    GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+    if (CharacterState == ECharacterState::OnFoot)
+        GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void ADudeWalksCharacter::OnSprintEnd()
 {
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle — enter
+// ---------------------------------------------------------------------------
+
+void ADudeWalksCharacter::OnEnterVehicle()
+{
+    if (CharacterState != ECharacterState::OnFoot) return;
+    if (AVehicleBase* V = FindNearbyVehicle())
+        EnterVehicle(V);
+}
+
+AVehicleBase* ADudeWalksCharacter::FindNearbyVehicle() const
+{
+    AVehicleBase* Nearest = nullptr;
+    float BestDistSq = VehicleEnterRadius * VehicleEnterRadius;
+    for (TActorIterator<AVehicleBase> It(GetWorld()); It; ++It)
+    {
+        const float DSq = FVector::DistSquared(GetActorLocation(), It->GetActorLocation());
+        if (DSq < BestDistSq)
+        {
+            BestDistSq = DSq;
+            Nearest = *It;
+        }
+    }
+    return Nearest;
+}
+
+void ADudeWalksCharacter::EnterVehicle(AVehicleBase* Vehicle)
+{
+    CurrentVehicle = Vehicle;
+    CharacterState = ECharacterState::EnteringVehicle;
+
+    GetCharacterMovement()->DisableMovement();
+
+    const FVector SeatLoc = Vehicle->GetDriverSeatWorldLocation();
+    const FRotator SeatRot = Vehicle->GetDriverSeatWorldRotation();
+    SetActorLocationAndRotation(SeatLoc, SeatRot);
+    AttachToActor(Vehicle, FAttachmentTransformRules::KeepWorldTransform);
+
+    if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Sub =
+                ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+        {
+            Sub->RemoveMappingContext(DefaultMappingContext);
+            Sub->AddMappingContext(VehicleMappingContext, 1);
+        }
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(
+        EnterTimerHandle, this, &ADudeWalksCharacter::FinishEnterVehicle,
+        EnterAnimDuration, false);
+}
+
+void ADudeWalksCharacter::FinishEnterVehicle()
+{
+    CharacterState = ECharacterState::Driving;
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle — honk
+// ---------------------------------------------------------------------------
+
+void ADudeWalksCharacter::OnHonk()
+{
+    Honk();
+}
+
+void ADudeWalksCharacter::Honk()
+{
+    if (CharacterState != ECharacterState::Driving) return;
+    CharacterState = ECharacterState::Honking;
+    GetWorld()->GetTimerManager().SetTimer(
+        ExitTimerHandle, [this]()
+        {
+            if (CharacterState == ECharacterState::Honking)
+                CharacterState = ECharacterState::Driving;
+        }, 1.f, false);
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle — exit
+// ---------------------------------------------------------------------------
+
+void ADudeWalksCharacter::OnExitVehicle()
+{
+    if (CharacterState != ECharacterState::Driving && CharacterState != ECharacterState::Honking) return;
+    ExitVehicle();
+}
+
+void ADudeWalksCharacter::ExitVehicle()
+{
+    if (CharacterState != ECharacterState::Driving && CharacterState != ECharacterState::Honking) return;
+    GetWorld()->GetTimerManager().ClearTimer(ExitTimerHandle);
+    CharacterState = ECharacterState::ExitingVehicle;
+
+    GetWorld()->GetTimerManager().SetTimer(
+        ExitTimerHandle, this, &ADudeWalksCharacter::FinishExitVehicle,
+        ExitAnimDuration, false);
+}
+
+void ADudeWalksCharacter::FinishExitVehicle()
+{
+    DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+    if (CurrentVehicle)
+    {
+        // Step out to the left of the vehicle
+        const FVector ExitOffset = CurrentVehicle->GetActorRightVector() * -150.f;
+        SetActorLocation(GetActorLocation() + ExitOffset, false, nullptr, ETeleportType::TeleportPhysics);
+    }
+
+    CurrentVehicle = nullptr;
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+    CharacterState = ECharacterState::OnFoot;
+
+    if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Sub =
+                ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+        {
+            Sub->RemoveMappingContext(VehicleMappingContext);
+            Sub->AddMappingContext(DefaultMappingContext, 0);
+        }
+    }
 }

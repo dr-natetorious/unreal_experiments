@@ -1,5 +1,8 @@
 {
   "mcpServers": {
+    "blender": {
+      "command": "/apps/git/ahujasid/blender-mcp/.venv/bin/blender-mcp"
+    },
     "unreal-mcp": {
       "command": "/home/nateb/.nvm/versions/node/v24.15.0/bin/node",
       "args": ["/apps/git/Unreal_mcp/dist/cli.js"],

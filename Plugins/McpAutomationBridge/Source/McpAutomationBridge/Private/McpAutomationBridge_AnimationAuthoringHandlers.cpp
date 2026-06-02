@@ -2386,7 +2386,11 @@ if (SubAction == TEXT("add_montage_notify"))
     if (SubAction == TEXT("add_state"))
     {
         FString BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("blueprintPath"), TEXT("")));
+        // Schema uses animPath; accept as alias for blueprintPath
+        if (BlueprintPath.IsEmpty()) BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("animPath"), TEXT("")));
         FString StateMachineName = GetStringFieldAnimAuth(Params, TEXT("stateMachineName"), TEXT(""));
+        // Schema uses machineName; accept as alias for stateMachineName
+        if (StateMachineName.IsEmpty()) StateMachineName = GetStringFieldAnimAuth(Params, TEXT("machineName"), TEXT(""));
         FString StateName = GetStringFieldAnimAuth(Params, TEXT("stateName"), TEXT(""));
         int32 NodePosX = static_cast<int32>(GetNumberFieldAnimAuth(Params, TEXT("positionX"), 200));
         int32 NodePosY = static_cast<int32>(GetNumberFieldAnimAuth(Params, TEXT("positionY"), 0));
@@ -2526,7 +2530,9 @@ if (SubAction == TEXT("add_montage_notify"))
     if (SubAction == TEXT("add_transition"))
     {
         FString BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("blueprintPath"), TEXT("")));
+        if (BlueprintPath.IsEmpty()) BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("animPath"), TEXT("")));
         FString StateMachineName = GetStringFieldAnimAuth(Params, TEXT("stateMachineName"), TEXT(""));
+        if (StateMachineName.IsEmpty()) StateMachineName = GetStringFieldAnimAuth(Params, TEXT("machineName"), TEXT(""));
         FString FromState = GetStringFieldAnimAuth(Params, TEXT("fromState"), TEXT(""));
         FString ToState = GetStringFieldAnimAuth(Params, TEXT("toState"), TEXT(""));
         float CrossfadeDuration = static_cast<float>(GetNumberFieldAnimAuth(Params, TEXT("crossfadeDuration"), 0.2));
@@ -2661,7 +2667,9 @@ if (SubAction == TEXT("add_montage_notify"))
     if (SubAction == TEXT("set_transition_rules"))
     {
         FString BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("blueprintPath"), TEXT("")));
+        if (BlueprintPath.IsEmpty()) BlueprintPath = NormalizeAnimPath(GetStringFieldAnimAuth(Params, TEXT("animPath"), TEXT("")));
         FString StateMachineName = GetStringFieldAnimAuth(Params, TEXT("stateMachineName"), TEXT(""));
+        if (StateMachineName.IsEmpty()) StateMachineName = GetStringFieldAnimAuth(Params, TEXT("machineName"), TEXT(""));
         FString FromState = GetStringFieldAnimAuth(Params, TEXT("fromState"), TEXT(""));
         FString ToState = GetStringFieldAnimAuth(Params, TEXT("toState"), TEXT(""));
         float CrossfadeDuration = static_cast<float>(GetNumberFieldAnimAuth(Params, TEXT("crossfadeDuration"), -1.0));

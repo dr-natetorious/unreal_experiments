@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "DudeWalksTypes.h"
 #include "DudeWalksAnimInstance.generated.h"
 
 /**
@@ -51,6 +52,10 @@ public:
     // 0.0=treading water, 1.0=swimming forward. Inner swim blend.
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
     float SwimMoveAlpha = 0.f;
+
+    // Full character state — drives vehicle AnimBP state machine.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DudeWalks")
+    ECharacterState CharacterState = ECharacterState::OnFoot;
 
 protected:
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# ollama create qwen-coder -f /app/models/huggingface/unsloth/Qwen3-Coder-Next/Modelfile
+# litellm --model ollama/qwen-coder --port 8000 --drop_params
+# ./build/bin/llama-server -m qwen2.5-coder-32b-instruct-q4_k_m.gguf -ngl all -sm row -c 32768 --port 11434
+#  nateb@imm:/apps/models/huggingface$ hf download Qwen/Qwen2.5-Coder-32B-Instruct-GGUF qwen2.5-coder-32b-instruct-q4_k_m.gguf --local-dir `pwd`/qwen-2.5-coder
+
+
+export ANTHROPIC_BASE_URL="http://127.0.0.1:8080"
+export ANTHROPIC_AUTH_TOKEN="local-dev"
+export CLAUDE_CODE_DISABLE_THINKING=true
+
+claude --model qwen3.6-27b
