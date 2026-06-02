@@ -5,6 +5,8 @@
 
 class UStaticMeshComponent;
 class USceneComponent;
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class DUDEWALKS_API AVehicleBase : public AActor
@@ -83,6 +85,14 @@ public:
     // Drives all three inputs for one frame then ticks — useful for Blueprint AI and tests.
     UFUNCTION(BlueprintCallable, Category="Driving")
     void SimulateFrame(float ThrottleAxis, float ReverseAxis, float SteerAxis, float DeltaTime);
+
+    // Dedicated chase camera — active while the player is driving this vehicle.
+    // SetViewTarget(Vehicle) activates it; SetViewTarget(Character) restores character cam.
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vehicle")
+    TObjectPtr<USpringArmComponent> DriveCameraBoom;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vehicle")
+    TObjectPtr<UCameraComponent> DriveCamera;
 
     // Override in Blueprint for vehicle-specific lights (siren, fire truck bar, etc.).
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Vehicle")

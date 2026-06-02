@@ -1,6 +1,8 @@
 #include "Vehicle/VehicleBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 AVehicleBase::AVehicleBase()
 {
@@ -12,6 +14,8 @@ AVehicleBase::AVehicleBase()
     BodyMesh->SetCollisionResponseToAllChannels(ECR_Block);
     // Pawn overlaps so character can snap to the seat without being blocked
     BodyMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+    // Camera flies through the body so the chase cam never collapses
+    BodyMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
     // Tires — no collision; body handles it. Mesh + axle offset set in Blueprint.
     auto MakeTire = [&](const TCHAR* Name) -> UStaticMeshComponent*
@@ -33,10 +37,32 @@ AVehicleBase::AVehicleBase()
         S->SetupAttachment(BodyMesh);
         return S;
     };
+    // Z = Blender seat cushion height + 90cm character mesh offset, so character
+    // root placed here puts the visible mesh sitting at seat-cushion level.
     SeatDriver    = MakeSeat(TEXT("SeatDriver"));
+    SeatDriver->SetRelativeLocation(FVector(50.f, -26.f, 136.f));
     SeatPassenger = MakeSeat(TEXT("SeatPassenger"));
+    SeatPassenger->SetRelativeLocation(FVector(50.f,  26.f, 136.f));
     SeatRearLeft  = MakeSeat(TEXT("SeatRearLeft"));
+    SeatRearLeft->SetRelativeLocation(FVector(-52.f, -26.f, 136.f));
     SeatRearRight = MakeSeat(TEXT("SeatRearRight"));
+    SeatRearRight->SetRelativeLocation(FVector(-52.f,  26.f, 136.f));
+
+    // Chase camera — follows the car from behind. Player controller switches to this
+    // via SetViewTarget(Vehicle) on entry and back to the character on exit.
+    DriveCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("DriveCameraBoom"));
+    DriveCameraBoom->SetupAttachment(BodyMesh);
+    DriveCameraBoom->TargetArmLength = 600.f;
+    DriveCameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 120.f));
+    DriveCameraBoom->SetRelativeRotation(FRotator(-15.f, 0.f, 0.f));
+    DriveCameraBoom->bUsePawnControlRotation = false;
+    DriveCameraBoom->bInheritPitch = false;
+    DriveCameraBoom->bInheritRoll  = false;
+    DriveCameraBoom->bInheritYaw   = true;
+
+    DriveCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DriveCamera"));
+    DriveCamera->SetupAttachment(DriveCameraBoom, USpringArmComponent::SocketName);
+    DriveCamera->bUsePawnControlRotation = false;
 }
 
 void AVehicleBase::Tick(float DeltaTime)

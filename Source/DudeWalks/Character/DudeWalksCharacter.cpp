@@ -148,6 +148,7 @@ void ADudeWalksCharacter::EnterVehicle(AVehicleBase* Vehicle)
             Sub->RemoveMappingContext(DefaultMappingContext);
             Sub->AddMappingContext(VehicleMappingContext, 1);
         }
+        PC->SetViewTarget(Vehicle);
     }
 
     GetWorld()->GetTimerManager().SetTimer(
@@ -241,6 +242,7 @@ void ADudeWalksCharacter::FinishExitVehicle()
 
     if (APlayerController* PC = Cast<APlayerController>(GetController()))
     {
+        PC->SetViewTarget(this);
         if (UEnhancedInputLocalPlayerSubsystem* Sub =
                 ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
         {
