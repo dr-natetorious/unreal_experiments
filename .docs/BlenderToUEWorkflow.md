@@ -161,7 +161,7 @@ bpy.context.view_layer.active_layer_collection = lc
 bpy.ops.export_scene.fbx(
     filepath='/path/to/output.fbx',
     use_active_collection=True,
-    global_scale=100.0,
+    global_scale=1.0,
     apply_unit_scale=False,
     apply_scale_options='FBX_SCALE_NONE',
     axis_forward='-Z',
