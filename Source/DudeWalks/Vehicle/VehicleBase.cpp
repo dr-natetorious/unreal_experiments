@@ -99,6 +99,14 @@ void AVehicleBase::ApplySteering(float Axis)
     SteerInput = FMath::Clamp(Axis, -1.f, 1.f);
 }
 
+void AVehicleBase::SimulateFrame(float ThrottleAxis, float ReverseAxis, float SteerAxis, float DeltaTime)
+{
+    ApplyThrottle(ThrottleAxis);
+    ApplyReverse(ReverseAxis);
+    ApplySteering(SteerAxis);
+    Tick(DeltaTime);
+}
+
 FVector AVehicleBase::GetSeatWorldLocation(FName SeatName) const
 {
     USceneComponent* Seats[] = { SeatDriver.Get(), SeatPassenger.Get(), SeatRearLeft.Get(), SeatRearRight.Get() };

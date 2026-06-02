@@ -47,31 +47,42 @@ public:
     TObjectPtr<USceneComponent> SeatRearRight;
 
     // --- Driving physics ---
-    UPROPERTY(EditDefaultsOnly, Category="Driving")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
     float MaxSpeed = 1200.f;    // cm/s forward
 
-    UPROPERTY(EditDefaultsOnly, Category="Driving")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
     float Acceleration = 800.f; // cm/s² applied per axis unit
 
-    UPROPERTY(EditDefaultsOnly, Category="Driving")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
     float Friction = 4.f;       // FInterpTo speed toward zero when no input
 
-    UPROPERTY(EditDefaultsOnly, Category="Driving")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
     float TurnSpeed = 80.f;     // deg/s at full steer, scales with speed ratio
 
-    UPROPERTY(EditDefaultsOnly, Category="Driving")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
     float TireRadius = 38.f;    // cm — from Blender measurement (0.38m)
 
     // Set each frame by the driving character; read in Tick.
+    UPROPERTY(BlueprintReadOnly, Category="Driving")
     float CurrentSpeed = 0.f;
 
+    UFUNCTION(BlueprintCallable, Category="Driving")
     void ApplyThrottle(float Axis);
+
+    UFUNCTION(BlueprintCallable, Category="Driving")
     void ApplyReverse(float Axis);
+
+    UFUNCTION(BlueprintCallable, Category="Driving")
     void ApplySteering(float Axis);
 
     // Returns world location of named seat component ("SeatDriver" etc.).
     // Falls back to actor location if name not found.
+    UFUNCTION(BlueprintCallable, Category="Vehicle|Seats")
     FVector GetSeatWorldLocation(FName SeatName) const;
+
+    // Drives all three inputs for one frame then ticks — useful for Blueprint AI and tests.
+    UFUNCTION(BlueprintCallable, Category="Driving")
+    void SimulateFrame(float ThrottleAxis, float ReverseAxis, float SteerAxis, float DeltaTime);
 
     // Override in Blueprint for vehicle-specific lights (siren, fire truck bar, etc.).
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Vehicle")
