@@ -60,6 +60,12 @@ void ADudeWalksCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     EIC->BindAction(EnterVehicleAction, ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnEnterVehicle);
     EIC->BindAction(HonkAction,         ETriggerEvent::Started,    this, &ADudeWalksCharacter::OnHonk);
     EIC->BindAction(ExitVehicleAction,  ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnExitVehicle);
+    if (ThrottleAction)
+        EIC->BindAction(ThrottleAction, ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnThrottle);
+    if (ReverseAction)
+        EIC->BindAction(ReverseAction,  ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnReverse);
+    if (SteerAction)
+        EIC->BindAction(SteerAction,    ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnSteer);
 }
 
 // ---------------------------------------------------------------------------
@@ -129,8 +135,8 @@ void ADudeWalksCharacter::EnterVehicle(AVehicleBase* Vehicle)
 
     GetCharacterMovement()->DisableMovement();
 
-    const FVector SeatLoc = Vehicle->GetDriverSeatWorldLocation();
-    const FRotator SeatRot = Vehicle->GetDriverSeatWorldRotation();
+    const FVector SeatLoc = Vehicle->GetSeatWorldLocation("SeatDriver");
+    const FRotator SeatRot = Vehicle->GetActorRotation();
     SetActorLocationAndRotation(SeatLoc, SeatRot);
     AttachToActor(Vehicle, FAttachmentTransformRules::KeepWorldTransform);
 
@@ -194,6 +200,28 @@ void ADudeWalksCharacter::ExitVehicle()
     GetWorld()->GetTimerManager().SetTimer(
         ExitTimerHandle, this, &ADudeWalksCharacter::FinishExitVehicle,
         ExitAnimDuration, false);
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle — driving inputs (forwarded to CurrentVehicle each frame)
+// ---------------------------------------------------------------------------
+
+void ADudeWalksCharacter::OnThrottle(const FInputActionValue& Value)
+{
+    if (CurrentVehicle)
+        CurrentVehicle->ApplyThrottle(Value.Get<float>());
+}
+
+void ADudeWalksCharacter::OnReverse(const FInputActionValue& Value)
+{
+    if (CurrentVehicle)
+        CurrentVehicle->ApplyReverse(Value.Get<float>());
+}
+
+void ADudeWalksCharacter::OnSteer(const FInputActionValue& Value)
+{
+    if (CurrentVehicle)
+        CurrentVehicle->ApplySteering(Value.Get<float>());
 }
 
 void ADudeWalksCharacter::FinishExitVehicle()

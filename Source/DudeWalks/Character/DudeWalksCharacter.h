@@ -51,6 +51,15 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     TObjectPtr<UInputAction> ExitVehicleAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> ThrottleAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> ReverseAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    TObjectPtr<UInputAction> SteerAction;
+
     // --- Movement speeds ---
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
     float WalkSpeed = 200.f;
@@ -99,6 +108,9 @@ private:
     void OnEnterVehicle();
     void OnHonk();
     void OnExitVehicle();
+    void OnThrottle(const FInputActionValue& Value);
+    void OnReverse(const FInputActionValue& Value);
+    void OnSteer(const FInputActionValue& Value);
 
     UPROPERTY()
     TObjectPtr<AVehicleBase> CurrentVehicle;

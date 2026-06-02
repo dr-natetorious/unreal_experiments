@@ -466,3 +466,332 @@ bool FDudeWalksRegressionSprintGuard::RunTest(const FString&)
     Dude->Destroy(); V->Destroy();
     return true;
 }
+
+// =============================================================================
+// VehicleBase — component structure
+// =============================================================================
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleBaseTiresCreated,
+    "DudeWalks.VehicleBase.Components.TiresCreated",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleBaseTiresCreated::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 18000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    TestNotNull(TEXT("TireFL created"), V->TireFL.Get());
+    TestNotNull(TEXT("TireFR created"), V->TireFR.Get());
+    TestNotNull(TEXT("TireRL created"), V->TireRL.Get());
+    TestNotNull(TEXT("TireRR created"), V->TireRR.Get());
+    if (V->TireFL)
+        TestEqual(TEXT("TireFL attached to BodyMesh"), V->TireFL->GetAttachParent(), (USceneComponent*)V->BodyMesh.Get());
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleBaseSeatsCreated,
+    "DudeWalks.VehicleBase.Components.SeatsCreated",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleBaseSeatsCreated::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 19000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    TestNotNull(TEXT("SeatDriver created"),    V->SeatDriver.Get());
+    TestNotNull(TEXT("SeatPassenger created"), V->SeatPassenger.Get());
+    TestNotNull(TEXT("SeatRearLeft created"),  V->SeatRearLeft.Get());
+    TestNotNull(TEXT("SeatRearRight created"), V->SeatRearRight.Get());
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleBaseSeatDriverLookup,
+    "DudeWalks.VehicleBase.Seat.DriverLookup",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleBaseSeatDriverLookup::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 20000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    const FVector SeatLoc = V->GetSeatWorldLocation("SeatDriver");
+    const FVector DriverCompLoc = V->SeatDriver ? V->SeatDriver->GetComponentLocation() : FVector::ZeroVector;
+    TestTrue(TEXT("GetSeatWorldLocation(SeatDriver) matches component location"),
+        SeatLoc.Equals(DriverCompLoc, 1.f));
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleBaseSeatUnknown,
+    "DudeWalks.VehicleBase.Seat.UnknownNameFallsBack",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleBaseSeatUnknown::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 21000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    const FVector FallbackLoc = V->GetSeatWorldLocation("SeatNonExistent");
+    TestTrue(TEXT("Unknown seat falls back to actor location"),
+        FallbackLoc.Equals(V->GetActorLocation(), 1.f));
+
+    V->Destroy();
+    return true;
+}
+
+// =============================================================================
+// VehicleBase — driving physics
+// =============================================================================
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingThrottle,
+    "DudeWalks.VehicleBase.Driving.ThrottleIncreasesSpeed",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingThrottle::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 22000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    V->ApplyThrottle(1.f);
+    V->Tick(0.016f);
+    TestTrue(TEXT("Throttle increases CurrentSpeed"), V->CurrentSpeed > 0.f);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingReverse,
+    "DudeWalks.VehicleBase.Driving.ReverseDecreasesSpeed",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingReverse::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 23000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    V->ApplyReverse(1.f);
+    V->Tick(0.016f);
+    TestTrue(TEXT("Reverse produces negative CurrentSpeed"), V->CurrentSpeed < 0.f);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingFriction,
+    "DudeWalks.VehicleBase.Driving.FrictionCoastsToStop",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingFriction::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 24000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    // Build up some speed
+    for (int i = 0; i < 30; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    const float SpeedAtPeak = V->CurrentSpeed;
+    TestTrue(TEXT("Speed built up before coasting"), SpeedAtPeak > 0.f);
+
+    // Coast without input — friction should slow it
+    for (int i = 0; i < 60; ++i) { V->Tick(0.016f); }
+    TestTrue(TEXT("Speed decreased after coasting"), V->CurrentSpeed < SpeedAtPeak);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingSpeedClamped,
+    "DudeWalks.VehicleBase.Driving.SpeedClamped",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingSpeedClamped::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 25000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    // Many frames of full throttle
+    for (int i = 0; i < 500; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    TestTrue(TEXT("CurrentSpeed never exceeds MaxSpeed"), V->CurrentSpeed <= V->MaxSpeed + 0.1f);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingSteering,
+    "DudeWalks.VehicleBase.Driving.SteeringRotatesActor",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingSteering::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 26000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    const float InitialYaw = V->GetActorRotation().Yaw;
+
+    // Build speed first, then steer
+    for (int i = 0; i < 30; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    for (int i = 0; i < 30; ++i)
+    {
+        V->ApplyThrottle(1.f);
+        V->ApplySteering(1.f);
+        V->Tick(0.016f);
+    }
+
+    TestTrue(TEXT("Steering changes actor yaw"), !FMath::IsNearlyEqual(V->GetActorRotation().Yaw, InitialYaw, 0.5f));
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVehicleDrivingTireRoll,
+    "DudeWalks.VehicleBase.Driving.TiresRollForward",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FVehicleDrivingTireRoll::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 27000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+    if (!TestNotNull(TEXT("TireFL exists"), V->TireFL.Get())) { V->Destroy(); return false; }
+
+    const float InitialPitch = V->TireFL->GetRelativeRotation().Pitch;
+    for (int i = 0; i < 10; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+
+    TestTrue(TEXT("TireFL pitch changed after driving"),
+        !FMath::IsNearlyEqual(V->TireFL->GetRelativeRotation().Pitch, InitialPitch, 0.01f));
+
+    V->Destroy();
+    return true;
+}
+
+// =============================================================================
+// Character — sits at driver seat after enter
+// =============================================================================
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCharacterSitsAtDriverSeat,
+    "DudeWalks.Character.EnterVehicle.SitsAtDriverSeat",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FCharacterSitsAtDriverSeat::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    ADudeWalksCharacter* Dude = SpawnDude(W, FVector(0.f, 28000.f, 0.f));
+    if (!TestNotNull(TEXT("Character spawned"), Dude)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(100.f, 28000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) { Dude->Destroy(); return false; }
+
+    const FVector ExpectedSeatLoc = V->GetSeatWorldLocation("SeatDriver");
+    Dude->EnterVehicle(V);
+    TestTrue(TEXT("Character placed at SeatDriver world location"),
+        Dude->GetActorLocation().Equals(ExpectedSeatLoc, 5.f));
+
+    Dude->Destroy(); V->Destroy();
+    return true;
+}
+
+// =============================================================================
+// Integration — full drive cycle and vehicle movement
+// =============================================================================
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FIntegrationVehicleMoves,
+    "DudeWalks.Integration.VehicleMovesOnThrottle",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FIntegrationVehicleMoves::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 29000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    const float StartX = V->GetActorLocation().X;
+    for (int i = 0; i < 60; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    TestTrue(TEXT("Vehicle moved forward on throttle"), V->GetActorLocation().X > StartX);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FIntegrationVehicleStops,
+    "DudeWalks.Integration.VehicleStopsOnNoInput",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FIntegrationVehicleStops::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(0.f, 30000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) return false;
+
+    // Build speed
+    for (int i = 0; i < 60; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    TestTrue(TEXT("Speed built up"), V->CurrentSpeed > 0.f);
+
+    // Coast until nearly stopped (3 seconds of simulated time)
+    for (int i = 0; i < 180; ++i) { V->Tick(0.016f); }
+    TestTrue(TEXT("Speed near zero after coasting"), FMath::Abs(V->CurrentSpeed) < 10.f);
+
+    V->Destroy();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FIntegrationFullCycle,
+    "DudeWalks.Integration.FullVehicleCycle",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FIntegrationFullCycle::RunTest(const FString&)
+{
+    UWorld* W = GetTestWorld();
+    if (!TestNotNull(TEXT("Game world"), W)) return false;
+    ADudeWalksCharacter* Dude = SpawnDude(W, FVector(0.f, 31000.f, 0.f));
+    if (!TestNotNull(TEXT("Character spawned"), Dude)) return false;
+    AVehicleBase* V = SpawnVehicle(W, FVector(100.f, 31000.f, 0.f));
+    if (!TestNotNull(TEXT("Vehicle spawned"), V)) { Dude->Destroy(); return false; }
+
+    // Enter
+    Dude->EnterVehicle(V);
+    TestTrue(TEXT("1. State = EnteringVehicle"), Dude->CharacterState == ECharacterState::EnteringVehicle);
+
+    Dude->FinishEnterVehicle();
+    TestTrue(TEXT("2. State = Driving"), Dude->CharacterState == ECharacterState::Driving);
+
+    // Drive
+    const float StartX = V->GetActorLocation().X;
+    for (int i = 0; i < 30; ++i) { V->ApplyThrottle(1.f); V->Tick(0.016f); }
+    TestTrue(TEXT("3. Vehicle moved"), V->GetActorLocation().X > StartX);
+
+    // Exit
+    Dude->ExitVehicle();
+    TestTrue(TEXT("4. State = ExitingVehicle"), Dude->CharacterState == ECharacterState::ExitingVehicle);
+
+    Dude->FinishExitVehicle();
+    TestTrue(TEXT("5. State = OnFoot"), Dude->CharacterState == ECharacterState::OnFoot);
+    TestNull(TEXT("6. Character detached"), Dude->GetAttachParentActor());
+
+    Dude->Destroy(); V->Destroy();
+    return true;
+}
