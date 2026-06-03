@@ -69,12 +69,13 @@ void AVehicleBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // Apply acceleration from this frame's input
-    CurrentSpeed += ThrottleInput * Acceleration * DeltaTime;
+    // Apply acceleration from this frame's input (boost raises the speed cap and acceleration)
+    const float SpeedCap = MaxSpeed * (1.f + (BoostMultiplier - 1.f) * BoostInput);
+    CurrentSpeed += ThrottleInput * Acceleration * (1.f + (BoostMultiplier - 1.f) * BoostInput) * DeltaTime;
     CurrentSpeed -= ReverseInput  * Acceleration * DeltaTime;
     // Coast to stop when no throttle/reverse
     CurrentSpeed  = FMath::FInterpTo(CurrentSpeed, 0.f, DeltaTime, Friction);
-    CurrentSpeed  = FMath::Clamp(CurrentSpeed, -MaxSpeed * 0.5f, MaxSpeed);
+    CurrentSpeed  = FMath::Clamp(CurrentSpeed, -MaxSpeed * 0.5f, SpeedCap);
 
     if (!FMath::IsNearlyZero(CurrentSpeed, 0.5f))
     {
@@ -108,6 +109,7 @@ void AVehicleBase::Tick(float DeltaTime)
     ThrottleInput = 0.f;
     ReverseInput  = 0.f;
     SteerInput    = 0.f;
+    BoostInput    = 0.f;
 }
 
 void AVehicleBase::ApplyThrottle(float Axis)
@@ -123,6 +125,11 @@ void AVehicleBase::ApplyReverse(float Axis)
 void AVehicleBase::ApplySteering(float Axis)
 {
     SteerInput = FMath::Clamp(Axis, -1.f, 1.f);
+}
+
+void AVehicleBase::ApplyBoost(float Axis)
+{
+    BoostInput = FMath::Clamp(Axis, 0.f, 1.f);
 }
 
 void AVehicleBase::SimulateFrame(float ThrottleAxis, float ReverseAxis, float SteerAxis, float DeltaTime)

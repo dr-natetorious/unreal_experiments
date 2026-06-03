@@ -1,5 +1,26 @@
 # Fire Truck Vehicle — Aerial Ladder Truck
 
+## **Key clarificataion from your questions**
+
+These instructions are gold standard and override any confusion from below:
+
+ I've noticed you do best by     
+  assemblying in peices and then stitching them together. To your questions: 1/ 
+  The Ambulance and Police car already exist and need to hold our Duder and     
+  Dudette (see /apps/git/unreal_experiments/.docs/BlenderToUEWorkflow.md;       
+  people are always same model/size). 2/ Previous sessions kept defaulting to   
+  British (e.g., spelling and putting steering wheel on wrong side). This is    
+  for an American kid. 3/ Good callout on the ladder. The goal is that it'll be 
+  a game mechanic for getting over obstacles and would need to extend and       
+  swivle. 4/ The cardboard was reference using planes over solid objects. With  
+  solid objects we need to hallow them out (e.g., in the cab) which is very     
+  fragile. 5/ For wheel count base it on the reference images 6/ Body vs cab    
+  seam - the last session was flakey so I asked it to dump the state into that  
+  .md file and we'd start fresh here. 6/ For collection count the important     
+  part is we align with the                                                     
+  /apps/git/unreal_experiments/Source/DudeWalks/Vehicle/VehicleBase.cpp and how 
+  that works for Ambulance and Police car.
+
 ## Concept
 
 A **Cartoon-style aerial ladder truck** for puzzle/navigation gameplay. Player drives the truck into position, deploys outriggers, aims the ladder, and sprays water from the ladder tip to extinguish animated cartoon fires. Dual-player support: Player 1 drives from the cab, Player 2 rides/operates from the basket tip. Single-player can swap between cab and basket.
@@ -619,6 +640,175 @@ bpy.ops.export_scene.fbx(
 **Collections:** Body, Interior, Wheels, Ladder, Basket, Outriggers
 
 **UE import path:** `/Game/Vehicles/FireTruck/`
+
+---
+
+## Blocking Scaffold (Blender Phase 1)
+
+First pass: simple cubes at approximate positions. All coordinates in Blender meters (+X = forward, +Z = up, Y=0 = center).
+
+```
+                    ┌──────── Ladder (stored on top) ────────┐
+                    │                                        │
+           ┌────────┴────────┐                               │
+           │   Cab           │  ┌── Body ceiling ────────────┤
+     3.5m ┼─┤                 ├─┤                              │
+           │  ┌────────┐ ┌──┐ │  │                              │
+     3.0m ┼──│ windshield│ │cab│ ├─┤                              │
+           │  └────────┘ │cab│ │  │                              │
+     2.5m ┼──┤            ├────┤  ├──────────────────────────────┤
+           │  │  interior │    │  │                              │
+     2.0m ┼──┤  (seats)  │    │  ├──────────────────────────────┤
+           │  │           │    │  │  ┌─┐  ┌─┐  ┌─┐  ┌─┐         │
+     1.8m ┼──┘ └─────────┘    └──┘  │D1│  │D2│  │D3│  │D4│ ┌───┤
+           │       ↑      │         │  │  │  │  │  │  │  │   │
+     1.0m ┼──│   floor    │         └──┴──┴──┴──┴──┴──┴──┴──┴──┤
+           │    at 1.8m   │                                    │
+     0.5m ┼───────────────┘                                    ┼─┤
+           │      bumper                                       │ │
+     0.3m ┼────────────────────────────────────────────────────┼─┘
+           │                                                   
+     0m  ──┼─────────────────────────────────────────────────────┼── ground
+           │                                                   
+          -1m   0m    1m    2m    3m    4m    5m    6m    7m    8m    9m   10m
+               rear                                              front
+```
+
+### Block Positions (cube center, Blender meters)
+
+These were the initial blocking targets. The **actual modeled measurements** are below in the Investigation Findings section.
+
+| Piece | X | Y | Z | Dimensions (X×Y×Z) | Notes |
+|-------|---|---|---|---|---|
+| **Cab** | 4.0 | 0 | 3.0 | 2.5 × 2.6 × 2.0 | Floor at ~2.0m (1.8m ground clearance) |
+| **Body** | 7.5 | 0 | 1.4 | 6.0 × 2.8 × 2.0 | Compartments, pump panel, rear tool tray |
+| **Bumper** | 5.3 | 0 | 0.35 | 0.3 × 2.6 × 0.4 | Front bumper, low to ground |
+| **Ladder** | 7.0 | 0 | 3.6 | 6.5 × 0.8 × 0.5 | Stored horizontally on body top |
+
+### Connection Points
+- Cab rear face (X=2.75) **touches** Body front face (X=4.5) — 1.25m overlap so they merge
+- Cab bottom (Z=2.0) sits **1.8m above ground** (fire truck cab floor height)
+- Body bottom (Z=0.4) sits **0.3m above ground** (body floor height)
+- Ladder rests on top of body module
+- Bumper sits in front of cab, low
+
+### Lessons Learned (Session Pitfalls)
+- Start with **simple aligned cubes** before adding any detail
+- **Verify alignment visually** (side view screenshot) before proceeding
+- Cab and body must **touch/overlap** — gaps look broken
+- Bumper must be **low to ground** — don't float it at cab height
+- Keep it to **4-5 blocks** initially, then subdivide
+
+---
+
+## 🔍 Investigation Findings (Session 2026-06-02)
+
+**File:** `Content/Animations/Vehicle/FireTruck.blend`
+**Investigation time:** ~25 min. Don't repeat — skip to this section next time.
+
+### Actual Modeled Geometry (Measured from Blender bounding boxes)
+
+All objects at `location=(0,0,0)`. Bounding boxes are world-space mesh extents.
+
+| Piece | Center (X,Y,Z) | Dimensions (X×Y×Z) | Verts | Faces | Materials Assigned |
+|-------|------|------|------|------|------|
+| **Cab** | (3.05, 0.00, 1.70) | 3.15×3.22×3.14 | 702 | 648 | M_RedPaint (648 faces), M_WhitePaint (0), M_Glass (0) |
+| **Body** | (6.59, 0.00, 1.26) | 8.59×3.36×2.51 | 15694 | 16098 | M_RedPaint (16098 faces), M_WhitePaint (0), M_DiamondPlate (0) |
+| **FrontBumper** | (4.19, 0.00, 1.75) | 1.52×2.60×3.20 | ? | ? | ? |
+| **Ladder** | (6.45, 0.00, 2.98) | 5.31×0.53×1.16 | 280 | 210 | M_Aluminum, M_WhitePaint |
+| **Basket** | (3.20, 0.00, 3.70) | 1.55×1.12×0.83 | 104 | 78 | M_WhitePaint, M_RedPaint, M_Aluminum |
+| **Outriggers** | (8.47, 0.00, 0.29) | 2.35×3.55×0.32 | 96 | 72 | M_Aluminum |
+| **Wheel_FL** | (0.00, 0.00, 0.00)* | 0.40×0.76×0.76 | 540 | 546 | M_TireRubber, M_Hub |
+
+*Wheel_FL is in the `Wheel` collection at origin. 5 preview instances (FR, RL1, RR1, RL2, RR2) placed in Scene Collection at axle positions.
+
+### Overall Truck Dimensions (Blender meters → UE cm)
+
+| Metric | Value | UE cm | Spec Range | Status |
+|--------|-------|-------|------------|--------|
+| **Length** | 11.1m | 1109 cm | 1067-1554 | ✓ Within spec |
+| **Width** | 3.6m | 355 cm | 244-254 | ⚠️ Wide (includes outriggers) |
+| **Height** | 4.5m | 449 cm | 305-396 | ⚠️ Tall (includes basket) |
+| **Wheel radius** | 0.38m | 38 cm | 38 (TireRadius) | ✓ Matches VehicleBase |
+
+### Wheel Orientation — CORRECT AS-IS
+
+- Wheel mesh has axle along Blender **local Z** (lying flat like a disc in viewport)
+- FBX export uses `axis_forward='-Z', axis_up='Y'`
+- This remaps Blender Z-axle → UE X-axle (forward)
+- UE `Tick()` rotates tires around **Pitch (X)** → wheel spins correctly ✓
+- **Do NOT rotate the wheel mesh.** The "flat" appearance in Blender is the correct orientation for export.
+- Wheel diameter = 0.76m, radius = 38cm matches `VehicleBase.TireRadius = 38.f`
+
+### Cab Interior
+
+- **702 vertices, 648 faces** — simple shell geometry
+- **244 interior faces** exist (normals face inward toward cab center) — good, character will be visible from inside
+- **404 exterior faces** face outward
+- **No detailed interior:** no separate dash, seats, or steering wheel geometry
+- Consistent with PoliceCar approach (simple shell, no interior detail)
+- **Solid red roof** (28 faces at Z > 3.12) — character will NOT be visible from above
+- **Windshield is solid red** — character will NOT be visible from front
+
+### Material Assignment Issues
+
+**Critical:** All cab faces use `M_RedPaint`. `M_WhitePaint` and `M_Glass` slots exist but have 0 faces assigned.
+Same for body — all faces use `M_RedPaint`, `M_DiamondPlate` has 0 faces.
+
+| Object | Should be White | Should be Glass | Should be DiamondPlate |
+|--------|----------------|----------------|---------------------|
+| Cab | Upper cab (Z > ~2.5) | Windshield (front, X < 1.65, Z > 2.0) | — |
+| Body | — | — | Rear tool tray (X > ~10) |
+
+### Collection Structure (Ready for Export)
+
+```
+Scene Collection
+├── Cab → [Cab]              ← Export as Cab.fbx (combine_meshes=True)
+├── Body → [Body]            ← Export as Body.fbx (combine_meshes=True)
+├── FrontBumper → [FrontBumper]  ← Export as FrontBumper.fbx
+├── Ladder → [Ladder]        ← Export as Ladder.fbx
+├── Basket → [Basket]        ← Export as Basket.fbx
+├── Outriggers → [Outriggers] ← Export as Outriggers.fbx
+├── Wheel → [Wheel_FL]       ← Export as Wheel.fbx (single mesh, reused ×6 in UE)
+├── Wheel_FR (preview instance, NOT for export)
+├── Wheel_RL1 (preview instance)
+├── Wheel_RR1 (preview instance)
+├── Wheel_RL2 (preview instance)
+└── Wheel_RR2 (preview instance)
+```
+
+### Cab/Body Connection
+
+- **Cab bounding box:** X: 1.47 → 4.62
+- **Body bounding box:** X: 2.30 → 10.89
+- **Overlap:** 4.62 - 2.30 = **2.33m** ✓ (cab rear extends well into body front)
+- Cab bottom Z: 0.13, Body top Z: 2.51 → cab sits on and above body
+- Cab floor at ~0.13m above ground (low, body fills underneath)
+- **Will merge cleanly** on FBX import with `combine_meshes=True`
+
+### Blender-to-UE Mapping (Verified)
+
+Per `BlenderToUEWorkflow.md`:
+- Blender +X = UE +X (forward) — car faces +X ✓
+- Blender +Z = UE +Z (up) — gravity direction ✓
+- Blender +Y = UE +Y (right) — but note: American left-side driver means **negative Y**
+- Export: `global_scale=1.0`, `apply_scale_options='FBX_SCALE_NONE'`, `axis_forward='-Z'`, `axis_up='Y'`
+- FBX natively converts Blender meters → cm. UE imports cm as UE units.
+
+### Pending Fixes Before Export
+
+1. **Material assignment** — select upper cab faces → `M_WhitePaint`; windshield → `M_Glass`; rear tool tray → `M_DiamondPlate`
+2. **Cab visibility** — delete roof faces (open roof per cardboard-style spec) OR make translucent
+3. **Verify** — no gaps at cab/body seam, wheel positions match body edges
+
+### How to Skip This Investigation Next Time
+
+Jump straight to this section. The geometry is modeled and positioned. Skip to:
+1. Fix materials (select faces by Z/X region, assign correct material slot)
+2. Fix cab visibility (delete roof or make translucent)
+3. Export collections per the Collection Structure above
+4. Import to UE per `BlenderToUEWorkflow.md`
 
 ---
 

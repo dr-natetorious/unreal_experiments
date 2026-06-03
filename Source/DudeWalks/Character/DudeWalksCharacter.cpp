@@ -66,6 +66,8 @@ void ADudeWalksCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
         EIC->BindAction(ReverseAction,  ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnReverse);
     if (SteerAction)
         EIC->BindAction(SteerAction,    ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnSteer);
+    if (BoostAction)
+        EIC->BindAction(BoostAction,    ETriggerEvent::Triggered,  this, &ADudeWalksCharacter::OnBoost);
 }
 
 // ---------------------------------------------------------------------------
@@ -223,6 +225,12 @@ void ADudeWalksCharacter::OnSteer(const FInputActionValue& Value)
 {
     if (CurrentVehicle)
         CurrentVehicle->ApplySteering(Value.Get<float>());
+}
+
+void ADudeWalksCharacter::OnBoost(const FInputActionValue& Value)
+{
+    if (CurrentVehicle)
+        CurrentVehicle->ApplyBoost(Value.Get<float>());
 }
 
 void ADudeWalksCharacter::FinishExitVehicle()

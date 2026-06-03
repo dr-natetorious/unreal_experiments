@@ -77,6 +77,12 @@ public:
     UFUNCTION(BlueprintCallable, Category="Driving")
     void ApplySteering(float Axis);
 
+    UFUNCTION(BlueprintCallable, Category="Driving")
+    void ApplyBoost(float Axis);
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Driving")
+    float BoostMultiplier = 2.0f;
+
     // Returns world location of named seat component ("SeatDriver" etc.).
     // Falls back to actor location if name not found.
     UFUNCTION(BlueprintCallable, Category="Vehicle|Seats")
@@ -103,4 +109,5 @@ private:
     float ThrottleInput = 0.f;
     float ReverseInput  = 0.f;
     float SteerInput    = 0.f;
+    float BoostInput    = 0.f;
 };
